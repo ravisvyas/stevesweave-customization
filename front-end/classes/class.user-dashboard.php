@@ -62,7 +62,7 @@ if (!class_exists('GeoDirUserDashboard', false)) {
                     $listing_data .= '<td class="action-column">';
                     // Add "View" link and "Edit" link (Edit goes to a custom URL)
                     $listing_data .= '<a href="' . get_permalink() . '" target="_blank">View</a> | ';
-                    $listing_data .= '<a href="' . site_url('/add-listing/business/?pid=' . get_the_ID()) . '" target="_blank">Edit</a>';
+                    $listing_data .= '<a href="' . site_url('/add-listing/listing/?pid=' . get_the_ID()) . '" target="_blank">Edit</a>';
                     $listing_data .= '</td>';
                     $listing_data .= '</tr>';
                 }
@@ -98,7 +98,7 @@ if (!class_exists('GeoDirUserDashboard', false)) {
                         <h3 class="numb-heading"><?php echo $click_rate . '%'; ?></h3>
                     </div>
                     <div class="stat-box create-button">
-                        <a href="/add-listing/business">
+                        <a href="/add-listing/listing">
                             <h3 class="numb-heading">+</h3>
                             <p class="pera-text">Creat Listing</p>
                         </a>

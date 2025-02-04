@@ -220,7 +220,7 @@ function geodir_save_post() {
                 // alert('Your Business listings have been updated');
                 jQuery('#gd-notification-sw').html('Your listings have been updated...');
                 setTimeout(function(){
-                    location.href = '/add-listing/business/?pid=' + textContent; 
+                    location.href = '/add-listing/listing/?pid=' + textContent; 
                 }, 3000);
                 
                 return true;

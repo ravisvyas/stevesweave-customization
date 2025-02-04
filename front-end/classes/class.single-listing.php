@@ -159,7 +159,7 @@ if (!class_exists('GeoDirSingleListing', false)) {
                             <?php self::populate_social_media_links($gd_post); ?>
                         </div>
                         <div class="input-group">
-                            <a href="<?php echo site_url(). '/add-listing/business/?pid='.$post_id; ?>" id="edit-listing-btn" class="save-btn single-btn">Edit This Listing</a>
+                            <a href="<?php echo site_url(). '/add-listing/listing/?pid='.$post_id; ?>" id="edit-listing-btn" class="save-btn single-btn">Edit This Listing</a>
                         </div>
                         <div class="input-group" id="claim-business-single">
                             <a href="<?= home_url('/claim-listing/'.$post_id.'/') ?>" class="save-btn single-btn" id="claim-listing-btn">Claim This Listing</a>
