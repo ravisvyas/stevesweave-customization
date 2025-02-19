@@ -1,106 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
-    /*const selectBox = document.querySelector(".custom-selectbox");
-    const inputField = document.querySelector("#business-category");
-    const dropdown = document.querySelector(".select-options");
-
-    // Toggle dropdown
-    inputField.addEventListener("focus", () => {
-        selectBox.classList.add("open");
-    });
-
-    inputField.addEventListener("input", function () {
-        const filter = inputField.value.toLowerCase();
-        const options = dropdown.querySelectorAll("li");
-
-        options.forEach(option => {
-            const text = option.innerText.toLowerCase();
-            if (text.includes(filter)) {
-                option.style.display = "flex";
-            } else {
-                option.style.display = "none";
-            }
-        });
-    });
-
-    dropdown.addEventListener("click", (e) => {
-        const clickedItem = e.target.closest("li"); // Check if an <li> is clicked
-        if (clickedItem) {
-            const selectedText = clickedItem.innerText.trim(); // Get the text content of the <li>
-            const selectedCid = clickedItem.getAttribute("data-cid"); // Get the data-cid attribute
-    
-            if (selectedCid) {
-                // Set values in the respective input fields
-                document.getElementById("gd_placecategory").value = selectedCid;
-                document.getElementById("default_category").value = selectedCid;
-            }
-    
-            inputField.value = selectedText; // Update the input field's value with the text
-            selectBox.classList.remove("open"); // Close the dropdown
-        }
-    });
-
-    // Close dropdown on blur
-    inputField.addEventListener("blur", () => {
-        setTimeout(() => selectBox.classList.remove("open"), 200);
-    });*/
-
-    /*document.getElementById("banner-upload-section").addEventListener("click", function () {
-        const fileInput = document.getElementById("file-upload");
-        fileInput.click(); // Trigger file selection
-    });
-
-    document.getElementById("file-upload").addEventListener("change", function (event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                document.querySelector(".banner-section").style.backgroundImage = `url(${e.target.result})`;
-            };
-            reader.readAsDataURL(file);
-        }
-        let fileInput = jQuery(this)[0].files[0]; // Get the selected file
-
-        if (!fileInput) {
-            alert('Please select a file.');
-            return;
-        }
-
-        let fileData = new FormData();
-        fileData.append('file', fileInput);
-        fileData.append('action', 'sw_file_upload');
-        fileData.append('security', ajax_object.nonce);
-
-        // Send the file via AJAX
-        jQuery.ajax({
-            url: ajax_object.ajax_url,
-            type: 'POST',
-            data: fileData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                if (response.success) {
-                    jQuery('#post_images').html(
-                        `${response.data.url}|${response.data.attachment_id}||`
-                    );
-                } else {
-                    jQuery('#post_images').html('');
-                }
-            },
-            error: function () {
-                jQuery('#post_images').html('');
-            },
-        });
-    });*/
-
     // Get references to the input field and the heading
     const bnameField = document.getElementById("post_title");
     const heading = document.querySelector(".main-banner-heading");
 
     // Add an input event listener to update the heading dynamically
-    bnameField.addEventListener("input", function () {
-        const inputValue = bnameField.value.trim(); // Get the input value and trim whitespace
-        heading.textContent = inputValue || "Business Name"; // Set heading text or default value
-    });
+    if (bnameField && heading) {
+		bnameField.addEventListener("input", function () {
+			const inputValue = bnameField.value.trim(); // Get the input value and trim whitespace
+			heading.textContent = inputValue || "Business Name"; // Set heading text or default value
+		});
+	}
 });
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -112,20 +21,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('social-icons-container');
     const modalTitle = document.getElementById('modal-title');
 
+    if (!addButton || !modal || !overlay || !saveButton || !closeButton || !container || !modalTitle) {
+        console.log("One or more elements are missing. Script execution stopped.");
+        return; // Stop execution if any element is missing
+    }
+
     let editingElement = null; // Keeps track of the element being edited
 
     // Open Modal for Adding or Editing
     const openModal = (element = null) => {
         modal.style.display = 'block';
+        const typeField = document.getElementById('social-media-type');
+        const linkField = document.getElementById('social-media-link');
+
+        if (!typeField || !linkField) {
+            console.warn("Modal input fields are missing.");
+            return;
+        }
+
         if (element) {
             const data = JSON.parse(element.dataset.info);
-            document.getElementById('social-media-type').value = data.type;
-            document.getElementById('social-media-link').value = data.link;
+            typeField.value = data.type;
+            linkField.value = data.link;
             modalTitle.textContent = 'Edit Social Media Link';
             editingElement = element;
         } else {
-            document.getElementById('social-media-type').value = 'facebook';
-            document.getElementById('social-media-link').value = '';
+            typeField.value = 'facebook';
+            linkField.value = '';
             modalTitle.textContent = 'Add Social Media Link';
             editingElement = null;
         }
@@ -137,7 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const deleteIcon = (iconElement) => {
-        iconElement.remove();
+        if (iconElement) {
+            iconElement.remove();
+        }
     };
 
     closeButton.addEventListener('click', closeModal);
@@ -146,8 +70,16 @@ document.addEventListener('DOMContentLoaded', function () {
     addButton.addEventListener('click', () => openModal());
 
     saveButton.addEventListener('click', () => {
-        const type = document.getElementById('social-media-type').value;
-        const link = document.getElementById('social-media-link').value;
+        const typeField = document.getElementById('social-media-type');
+        const linkField = document.getElementById('social-media-link');
+
+        if (!typeField || !linkField) {
+            console.warn("Modal input fields are missing.");
+            return;
+        }
+
+        const type = typeField.value;
+        const link = linkField.value.trim();
 
         if (link) {
             if (editingElement) {
@@ -187,6 +119,21 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Please enter a valid link.');
         }
     });
+	document.querySelectorAll('.delete-icon').forEach(deleteIcon => {
+	  deleteIcon.addEventListener('click', function () {
+		// Find the parent div with class "social-icon-container"
+		const socialIconContainer = this.closest('.social-icon-container');
+
+		// Find the next sibling element (the hidden input field)
+		const hiddenInput = socialIconContainer.nextElementSibling;
+
+		// Remove both the social-icon-container and the hidden input field
+		if (socialIconContainer && hiddenInput && hiddenInput.tagName === 'INPUT') {
+		  socialIconContainer.remove();
+		  hiddenInput.remove();
+		}
+	  });
+	});
 });
 
 jQuery(document).ready(function($) {
@@ -224,13 +171,4 @@ jQuery(document).ready(function($) {
         }
     });
 
-    //ajax callback
-    jQuery( document ).ajaxComplete(function( event, xhr, settings ) {
-
-        // console.log(settings.data);
-        if( settings.data.indexOf("geodir_save_post") > -1 ) {
-            
-        }
-
-    });
 });

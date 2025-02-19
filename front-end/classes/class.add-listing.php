@@ -469,13 +469,13 @@ if (!class_exists('GeoDirAddListing', false)) {
                         <div class="form-right add-listing-form-right">
                             <div class="input-group">
                                 <label>🌐 Business Link*</label>
-                                <input type="text" name="website" value="<?php echo $website; ?>" class="input-field" placeholder="business1234.business.com" >
+                                <input type="text" name="website" value="<?php echo $website; ?>" class="input-field" placeholder="business1234.business.com">
                             </div>
                             <div class="input-group">
                                 <label>📍 Location</label>
                                 <input type="text" name="sw_address" class="input-field" 
                                     value="<?php echo isset($address) ? $address : ''; ?>" 
-                                    placeholder="1234 Boston St, Boston, MA">
+                                    placeholder="1234 Boston St, Boston, MA" required>
 
                                 <input type="hidden" name="street" 
                                     value="<?php echo isset($street) ? $street : '1234'; ?>">
@@ -497,7 +497,7 @@ if (!class_exists('GeoDirAddListing', false)) {
                             </div>
                             <div class="input-group">
                                 <label>📧 Business Contact Email</label>
-                                <input type="email"  name="business_contact_" required value="<?php echo $business_contact_; ?>" class="input-field" placeholder="contact@goodfilling.com" >
+                                <input type="email"  name="business_contact_" value="<?php echo $business_contact_; ?>" class="input-field" placeholder="contact@goodfilling.com" >
                             </div>
                             <div class="input-group">
                                 <label>📞  Phone</label>
@@ -516,7 +516,7 @@ if (!class_exists('GeoDirAddListing', false)) {
                                 <div class="modal-overlay" id="modal-overlay"></div>
                                 <div class="modal-box">
                                     <div class="modal-header">
-                                        <h2>Add Social Media Link</h2>
+                                        <h2 id="modal-title">Add Social Media Link</h2>
                                         <button type="button" id="close-modal" class="modal-close">&times;</button>
                                     </div>
                                     <div class="modal-body">
@@ -548,6 +548,72 @@ if (!class_exists('GeoDirAddListing', false)) {
                 </section>
                 <span class="geodir_message_note" style="padding-left:0px;"> <?php //_e( 'Note: You will be able to see a preview in the next page', 'geodirectory' ); ?></span>
             </form>
+			<script>
+				document.addEventListener("DOMContentLoaded", function () {
+					function initAutocomplete() {
+						const input = document.querySelector("input[name='sw_address']");
+						if (!input) return;
+
+						const autocomplete = new google.maps.places.Autocomplete(input, {
+							types: ['geocode'],
+							componentRestrictions: { country: "us" } // Restrict to US, change as needed
+						});
+
+						autocomplete.addListener("place_changed", function () {
+							const place = autocomplete.getPlace();
+							if (!place.address_components) return;
+
+							let addressData = {
+								street: "",
+								street2: "",
+								city: "",
+								region: "",
+								country: "",
+								zip: ""
+							};
+
+							place.address_components.forEach(component => {
+								const type = component.types[0];
+
+								switch (type) {
+									case "street_number":
+										addressData.street = component.long_name;
+										break;
+									case "route":
+										addressData.street += " " + component.long_name;
+										break;
+									case "locality":
+										addressData.city = component.long_name;
+										break;
+									case "administrative_area_level_1":
+										addressData.region = component.short_name;
+										break;
+									case "country":
+										addressData.country = component.long_name;
+										break;
+									case "postal_code":
+										addressData.zip = component.long_name;
+										break;
+								}
+							});
+
+							// Fill the hidden fields
+							document.querySelector("input[name='street']").value = addressData.street;
+							document.querySelector("input[name='street2']").value = addressData.city + " " + addressData.region;
+							document.querySelector("input[name='city']").value = addressData.city;
+							document.querySelector("input[name='region']").value = addressData.region;
+							document.querySelector("input[name='country']").value = addressData.country;
+							document.querySelector("input[name='zip']").value = addressData.zip;
+						});
+					}
+
+					if (typeof google !== "undefined" && google.maps) {
+						initAutocomplete();
+					} else {
+						document.addEventListener("load", initAutocomplete);
+					}
+				});
+				</script>
             <?php
             }
             return ob_get_clean();
@@ -610,7 +676,7 @@ if (!class_exists('GeoDirAddListing', false)) {
             if (!empty($social_media_links)) {
                 foreach ($social_media_links as $social) {
                     $data = json_decode($social, true);
-                    $result .= '<div id="social-icon-container"><div data-info="{&quot;type&quot;:&quot;' . esc_attr($data['type']) . '&quot;,&quot;link&quot;:&quot;' . esc_attr($data['link']) . '&quot;}" class="social-icon ' . esc_attr($data['type']) . '" title="' . esc_attr($data['link']) . '">';
+                    $result .= '<div class="social-icon-container"><div data-info="{&quot;type&quot;:&quot;' . esc_attr($data['type']) . '&quot;,&quot;link&quot;:&quot;' . esc_attr($data['link']) . '&quot;}" class="social-icon ' . esc_attr($data['type']) . '" title="' . esc_attr($data['link']) . '">';
                     $result .= '<i class="fab fa-' . esc_attr($data['type']) . '"></i>';
                     $result .= '</div><div class="delete-icon">×</div></div>';
                     $result .= '<input type="hidden" name="social_media[]" value="{&quot;type&quot;:&quot;' . esc_attr($data['type']) . '&quot;,&quot;link&quot;:&quot;' . esc_attr($data['link']) . '&quot;}">';
